@@ -29,10 +29,11 @@ class CrosswordSheet(Sheet):
 
 
 CrosswordSheet.addCommand('X', 'open-clues', 'vd.push(CluesSheet("clues_"+cursorRow.title, source=cursorRow))')
+bindkeys.set(ENTER, 'open-clues', CrosswordSheet)
 
 
-class GridSheet(Sheet):
-    pass
+#class GridSheet(Sheet):
+ #   pass
 
 
 class CluesSheet(Sheet):
