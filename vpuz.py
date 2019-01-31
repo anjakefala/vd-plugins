@@ -1,18 +1,20 @@
 from visidata import *
 
+
 def open_puz(p):
-     vs = CrosswordSheet(p.name, source=p)
-     return vs
+    vs = CrosswordSheet(p.name, source=p)
+    return vs
+
 
 class CrosswordSheet(Sheet):
-    rowtype = 'rows' 
+    rowtype = 'rows'
     columns = [
-            Column('Author', getter=lambda col, row: row.puzobj.author),
-            Column('Copyright', getter=lambda col, row: row.puzobj.copyright),
-            Column('Notes', getter=lambda col, row: row.puzobj.notes),
-            Column('Postscript', getter=lambda col, row: ''.join(x for x in row.puzobj.postscript if ord(x) >= ord(' '))),
-            Column('Preamble', getter=lambda col, row: row.puzobj.preamble),
-            Column('Title', getter=lambda col, row: row.puzobj.title)
+            Column('Author', getter=lambda col, row: row.author),
+            Column('Copyright', getter=lambda col, row: row.copyright),
+            Column('Notes', getter=lambda col, row: row.notes),
+            Column('Postscript', getter=lambda col, row: ''.join(x for x in row.postscript if ord(x) >= ord(' '))),
+            Column('Preamble', getter=lambda col, row: row.preamble),
+            Column('Title', getter=lambda col, row: row.title)
             ]
 
     @asyncthread
@@ -23,19 +25,18 @@ class CrosswordSheet(Sheet):
 
         contents = self.source.open_bytes().read()
         puzobj = puz.load(contents)
-        vs = CluesSheet('clues_'+puzobj.title, source=puzobj)
-        vs.reload()
-        vs.puzobj = puzobj
-        self.addRow(vs)
+        self.addRow(puzobj)
 
-CrosswordSheet.addCommand(ENTER, 'dive-row', 'vd.push(cursorRow)')
 
+CrosswordSheet.addCommand('X', 'open-clues', 'vd.push(CluesSheet("clues_"+cursorRow.title, source=cursorRow))')
 
 
 class GridSheet(Sheet):
     pass
 
+
 class CluesSheet(Sheet):
+    rowtype = 'clues'
 
     columns = [
             Column('clue_number', getter=lambda col, row: row[0]),
@@ -51,10 +52,6 @@ class CluesSheet(Sheet):
 
         self.rows = []
 
-        answers = {}
-        for posdir, posnum, answer in 
-
-
         for number, clue in puzzle.clues.across():
             cluenum = 'A' + str(number)
             self.addRow((cluenum, clue))
@@ -62,6 +59,3 @@ class CluesSheet(Sheet):
         for number, clue in puzzle.clues.down():
             cluenum = 'D' + str(number)
             self.addRow((cluenum, clue))
-
-
-
