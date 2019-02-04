@@ -28,12 +28,22 @@ class CrosswordSheet(Sheet):
         self.addRow(puzobj)
 
 
-CrosswordSheet.addCommand('X', 'open-clues', 'vd.push(CluesSheet("clues_"+cursorRow.title, source=cursorRow))')
-bindkeys.set(ENTER, 'open-clues', CrosswordSheet)
+CrosswordSheet.addCommand(ENTER, 'open-clues', 'vd.push(CluesSheet("clues_"+cursorRow.title, source=cursorRow))')
 
+class GridSheet(Sheet):
+    rowtype = 'gridrow'
 
-#class GridSheet(Sheet):
- #   pass
+    @asyncthread
+    def reload(self):
+
+        grid = self.source
+
+        ncols = len(grid[0])
+        self.columns = [ColumnItem('', i, width=2) for i in range(ncols)]
+
+        for row in grid:
+            row = list(row)
+            self.addRow(row)
 
 
 class CluesSheet(Sheet):
@@ -85,11 +95,11 @@ class CluesSheet(Sheet):
 
         for number, clue in puzzle.clues.across():
             cluenum = 'A' + str(number)
-            self.addRow((cluenum, clue, answers.get(cluenum, '')))
+            self.addRow((cluenum, clue, answers.get(cluenum, ''), grid))
 
         for number, clue in puzzle.clues.down():
             cluenum = 'D' + str(number)
-            self.addRow((cluenum, clue, answers.get(cluenum, '')))
+            self.addRow((cluenum, clue, answers.get(cluenum, ''), grid))
 
     def iteranswers(self, grid):
         for direction, clue_num, answer, r, c in self.iteranswers_full(grid):
@@ -139,3 +149,4 @@ class CluesSheet(Sheet):
             return '#' # BLOCK_CHAR
         return grid[r][c]
 
+CluesSheet.addCommand('X', 'open-grid', 'vd.push(GridSheet("grid", source=cursorRow[3]))')
